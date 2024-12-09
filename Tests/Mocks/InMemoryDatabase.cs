@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using testing_final.Logic.Models;
-using testing_final.Logic.Data;
+using testing_final.Logic.Interfaces;
 
 namespace testing_final.Tests.Mocks;
 
@@ -34,5 +34,10 @@ public class InMemoryDatabase : IDatabase
         {
             order.IsFulfilled = true;
         }
+    }
+
+    public List<Order> GetOrdersByDate(DateTime date)
+    {
+        return _orders.Where(o => o.OrderDate.Date == date.Date).ToList();
     }
 }
