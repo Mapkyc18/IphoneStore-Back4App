@@ -1,51 +1,70 @@
 @page "/manager-dashboard"
 @inject OrderManager OrderManager
 
-<h3>Manager Dashboard</h3>
-
-<div class="form">
-    <label for="date">Select a date:</label>
-    <input type="date" id="date" @bind="SelectedDate" />
-</div>
-
-<table>
-    <thead>
-        <tr>
-            <th>Order ID</th>
-            <th>Date</th>
-            <th>Total</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Orders)
-        {
-            <tr>
-                <td>@order.OrderId</td>
-                <td>@order.OrderDate.ToShortDateString()</td>
-                <td>@order.TotalAmount:C</td>
-                <td>
-                    <button @onclick="() => ViewDetails(order.OrderId)">View Details</button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-@if (SelectedOrder != null)
+@if (!IsAuthenticated)
 {
-    <h4>Order Details</h4>
-    <ul>
-        @foreach (var item in SelectedOrder.Items)
-        {
-            <li>@item.Quantity x @item.Name (@item.Price:C each)</li>
-        }
-    </ul>
-    <p><strong>Total:</strong> @SelectedOrder.TotalAmount:C</p>
+    <h3>Manager Login</h3>
+    <input type="password" @bind="Password" placeholder="Enter Password" />
+    <button @onclick="Login">Login</button>
+    @if (LoginFailed)
+    {
+        <p style="color: red;">Invalid password. Please try again.</p>
+    }
+}
+else
+{
+    <h3>Manager Dashboard</h3>
+
+    <div class="form">
+        <label for="date">Select a date:</label>
+        <input type="date" id="date" @bind="SelectedDate" />
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Orders)
+            {
+                <tr>
+                    <td>@order.OrderId</td>
+                    <td>@order.OrderDate.ToShortDateString()</td>
+                    <td>@order.TotalAmount:C</td>
+                    <td>
+                        <button @onclick="() => ViewDetails(order.OrderId)">View Details</button>
+                        <button @onclick="() => FulfillOrder(order.OrderId)" disabled="@order.IsFulfilled">Fulfill</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (SelectedOrder != null)
+    {
+        <h4>Order Details</h4>
+        <ul>
+            @foreach (var item in SelectedOrder.Items)
+            {
+                <li>@item.Quantity x @item.Name (@item.Price:C each)</li>
+            }
+        </ul>
+        <p><strong>Total:</strong> @SelectedOrder.TotalAmount:C</p>
+    }
 }
 
 @code {
-    private DateTime SelectedDate = DateTime.Now; // Added this variable
+    private bool IsAuthenticated = false;
+    private bool LoginFailed = false;
+    private string Password = string.Empty;
+    private const string ManagerPassword = "admin123"; // Replace with a secure mechanism
+
+    private DateTime SelectedDate = DateTime.Now;
     private List<Order> Orders = new();
     private Order? SelectedOrder;
 
@@ -74,6 +93,26 @@
             {
                 Console.WriteLine($"Item: {item.Name}, Quantity: {item.Quantity}, Price: {item.Price:C}");
             }
+        }
+    }
+
+    private void FulfillOrder(int orderId)
+    {
+        OrderManager.FulfillOrder(orderId);
+        LoadOrders(); // Refresh the orders list
+    }
+
+    private void Login()
+    {
+        if (Password == ManagerPassword)
+        {
+            IsAuthenticated = true;
+            LoginFailed = false;
+            LoadOrders(); // Load orders after successful login
+        }
+        else
+        {
+            LoginFailed = true;
         }
     }
 }
