@@ -38,6 +38,9 @@ public class OrderManager : IOrderManager
 
     public Order? GetOrderDetails(int orderId)
     {
-        return _database.GetPendingOrders().FirstOrDefault(o => o.OrderId == orderId);
+        var order = _database.GetPendingOrders().FirstOrDefault(o => o.OrderId == orderId);
+        Console.WriteLine($"Retrieved Order - ID: {order?.OrderId}, TotalAmount: {order?.TotalAmount}");
+        return order;
     }
+
 }
