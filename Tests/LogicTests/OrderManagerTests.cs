@@ -39,20 +39,27 @@ public class OrderManagerTests
     {
         // Arrange
         var database = new InMemoryDatabase();
-        var orderManager = new OrderManager(database);
+        var manager = new OrderManager(database);
 
         var order = new Order
         {
             OrderDate = DateTime.Now,
-            Items = new List<Item> { new Item { Name = "iPhone", Price = 999.99m, Quantity = 1 } }
+            Items = new List<Item>
+        {
+            new Item { Name = "iPhone", Price = 999, Quantity = 1 }
+        }
         };
-        orderManager.AddOrder(order);
+        manager.AddOrder(order);
 
         // Act
-        orderManager.FulfillOrder(order.OrderId);
+        manager.FulfillOrder(order.OrderId);
 
         // Assert
-        var pendingOrders = orderManager.GetPendingOrders();
-        pendingOrders.Should().BeEmpty();
+        var fulfilledOrder = database.GetPendingOrders().FirstOrDefault(o => o.OrderId == order.OrderId);
+        Assert.NotNull(fulfilledOrder);
+        Assert.True(fulfilledOrder.IsFulfilled);
     }
+
+
+
 }
