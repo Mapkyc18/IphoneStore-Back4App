@@ -1,0 +1,55 @@
+@inject NavigationManager NavigationManager
+
+<h3>Manager Login</h3>
+<div class="form">
+    <input type="password" @bind="password" placeholder="Enter Password" />
+    <button @onclick="Login">Login</button>
+    <p class="error">@errorMessage</p>
+</div>
+
+<style>
+    .form {
+        max-width: 400px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    input {
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+    button {
+        width: 100%;
+        padding: 0.5rem;
+        font-size: 1rem;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .error {
+        color: red;
+        margin-top: 0.5rem;
+    }
+</style>
+
+@code {
+    private string password = string.Empty;
+    private string errorMessage = string.Empty;
+
+    private void Login()
+    {
+        if (password == "manager123") // Example password
+        {
+            NavigationManager.NavigateTo("/manager-dashboard");
+        }
+        else
+        {
+            errorMessage = "Invalid password. Please try again.";
+        }
+    }
+}
