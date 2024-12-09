@@ -1,5 +1,4 @@
-using System.Text.Json;
-using SQLite;
+using System.Linq;
 
 namespace testing_final.Logic.Models;
 
@@ -11,13 +10,19 @@ public class Order
     public decimal SalesTax { get; set; }
     public bool IsFulfilled { get; set; }
 
-    // Store Items as a JSON string in the database
     public string ItemsJson
     {
-        get => JsonSerializer.Serialize(Items);
-        set => Items = string.IsNullOrEmpty(value) ? new List<Item>() : JsonSerializer.Deserialize<List<Item>>(value);
+        get => System.Text.Json.JsonSerializer.Serialize(Items);
+        set => Items = string.IsNullOrEmpty(value) ? new List<Item>() : System.Text.Json.JsonSerializer.Deserialize<List<Item>>(value);
     }
 
-    [Ignore] // Prevent SQLite from trying to map this directly
+    [SQLite.Ignore]
     public List<Item> Items { get; set; } = new();
+
+    public void CalculateTotal(decimal taxRate)
+    {
+        decimal subtotal = Items.Sum(item => item.Price * item.Quantity);
+        SalesTax = subtotal * taxRate;
+        TotalAmount = subtotal + SalesTax;
+    }
 }
