@@ -38,6 +38,6 @@ public class OrderManager : IOrderManager
 
     public Order? GetOrderDetails(int orderId)
     {
-        return GetPendingOrders().FirstOrDefault(o => o.OrderId == orderId);
+        return _database.GetPendingOrders().FirstOrDefault(o => o.OrderId == orderId);
     }
 }
