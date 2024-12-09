@@ -1,4 +1,4 @@
-/* Scoped styles for MainLayout */
+/* Container styles */
 .container {
     font-family: Arial, sans-serif;
     max-width: 800px;
@@ -7,12 +7,32 @@
     color: #333;
 }
 
+/* Header styles */
 header {
     text-align: center;
     margin-bottom: 1rem;
     font-size: 1.5rem;
 }
 
+/* Navigation bar */
+nav {
+    margin: 1rem 0;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Footer styles */
 footer {
     text-align: center;
     margin-top: 2rem;
@@ -20,6 +40,7 @@ footer {
     color: #666;
 }
 
+/* Main content */
 main {
     margin-bottom: 1rem;
 }
