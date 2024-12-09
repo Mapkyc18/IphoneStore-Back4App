@@ -63,6 +63,11 @@ public class Database : IDatabase
 
     public List<Order> GetOrdersByDate(DateTime date)
     {
-        return _db.Table<Order>().Where(o => o.OrderDate.Date == date.Date).ToList();
+        var startOfDay = date.Date; // Midnight of the specified day
+        var endOfDay = startOfDay.AddDays(1); // Midnight of the next day
+
+        return _db.Table<Order>()
+                  .Where(o => o.OrderDate >= startOfDay && o.OrderDate < endOfDay)
+                  .ToList();
     }
 }

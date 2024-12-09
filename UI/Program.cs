@@ -1,4 +1,5 @@
 using testing_final.Logic.Data;
+using testing_final.Logic.Interfaces;
 using testing_final.Logic.Services;
 using UI.Components;
 
@@ -8,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
     
-builder.Services.AddSingleton(new Database("orders.db")); // Replace "orders.db" with your actual database path
+var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "orders.db");
+builder.Services.AddSingleton<IDatabase>(provider => new Database(dbPath));
 builder.Services.AddSingleton<OrderManager>();
 
 var app = builder.Build();
