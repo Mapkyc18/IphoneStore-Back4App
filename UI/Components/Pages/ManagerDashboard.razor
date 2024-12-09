@@ -45,7 +45,7 @@
 }
 
 @code {
-    private DateTime SelectedDate = DateTime.Now;
+    private DateTime SelectedDate = DateTime.Now; // Added this variable
     private List<Order> Orders = new();
     private Order? SelectedOrder;
 
@@ -62,5 +62,18 @@
     private void ViewDetails(int orderId)
     {
         SelectedOrder = OrderManager.GetOrderDetails(orderId);
+
+        if (SelectedOrder == null)
+        {
+            Console.WriteLine($"Order with ID {orderId} not found.");
+        }
+        else
+        {
+            Console.WriteLine($"Selected Order ID: {SelectedOrder.OrderId}, Total: {SelectedOrder.TotalAmount:C}");
+            foreach (var item in SelectedOrder.Items)
+            {
+                Console.WriteLine($"Item: {item.Name}, Quantity: {item.Quantity}, Price: {item.Price:C}");
+            }
+        }
     }
 }

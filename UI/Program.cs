@@ -9,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
     
-var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "orders.db");
+var dbPath = Path.Combine(Directory.GetCurrentDirectory(), "orders.db");
+Console.WriteLine($"Database path: {dbPath}");
 builder.Services.AddSingleton<IDatabase>(provider => new Database(dbPath));
 builder.Services.AddSingleton<OrderManager>();
 

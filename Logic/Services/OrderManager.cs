@@ -23,7 +23,16 @@ public class OrderManager : IOrderManager
 
     public List<Order> GetPendingOrders()
     {
-        return _database.GetPendingOrders();
+        // Fetch pending orders from the database
+        var orders = _database.GetPendingOrders();
+
+        foreach (var order in orders)
+        {
+            // Populate items for each order
+            order.Items = _database.GetItemsByOrderId(order.OrderId);
+        }
+
+        return orders;
     }
 
     public void FulfillOrder(int orderId)
@@ -33,14 +42,33 @@ public class OrderManager : IOrderManager
 
     public List<Order> GetOrdersByDate(DateTime date)
     {
-        return _database.GetOrdersByDate(date);
+        var orders = _database.GetOrdersByDate(date);
+
+        foreach (var order in orders)
+        {
+            // Populate items for each order
+            order.Items = _database.GetItemsByOrderId(order.OrderId);
+        }
+
+        return orders;
     }
 
     public Order? GetOrderDetails(int orderId)
     {
+        // Retrieve the order from the database
         var order = _database.GetPendingOrders().FirstOrDefault(o => o.OrderId == orderId);
-        Console.WriteLine($"Retrieved Order - ID: {order?.OrderId}, TotalAmount: {order?.TotalAmount}");
+
+        if (order != null)
+        {
+            // Fetch associated items for the order
+            order.Items = _database.GetItemsByOrderId(order.OrderId);
+            Console.WriteLine($"Order ID: {order.OrderId}, TotalAmount: {order.TotalAmount:C}");
+            foreach (var item in order.Items)
+            {
+                Console.WriteLine($"Item: {item.Name}, Quantity: {item.Quantity}, Price: {item.Price:C}");
+            }
+        }
+
         return order;
     }
-
 }

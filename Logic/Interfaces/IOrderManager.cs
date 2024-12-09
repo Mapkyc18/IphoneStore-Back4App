@@ -8,5 +8,5 @@ public interface IOrderManager
     List<Order> GetPendingOrders();
     void FulfillOrder(int orderId);
     List<Order> GetOrdersByDate(DateTime date);
-    Order GetOrderDetails(int orderId);
+    Order? GetOrderDetails(int orderId);
 }

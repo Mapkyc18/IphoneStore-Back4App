@@ -20,13 +20,9 @@ public class Database : IDatabase
         }
 
         Console.WriteLine($"Initializing database at: {dbPath}");
-
-        // Ensure the database file is created in the specified path
-        Directory.CreateDirectory(Path.GetDirectoryName(dbPath));
+        Directory.CreateDirectory(Path.GetDirectoryName(dbPath) ?? throw new ArgumentException("Invalid database path.", nameof(dbPath)));
 
         _db = new SQLiteConnection(dbPath);
-
-        // Automatically create tables if they do not exist
         _db.CreateTable<Order>();
         _db.CreateTable<Item>();
     }
@@ -35,8 +31,9 @@ public class Database : IDatabase
     {
         if (order == null) throw new ArgumentNullException(nameof(order));
 
-        // Save the order
+        // Insert the order and get the generated OrderId
         _db.Insert(order);
+        order.OrderId = _db.ExecuteScalar<int>("SELECT last_insert_rowid()");
 
         // Save the associated items
         foreach (var item in order.Items)
@@ -46,9 +43,18 @@ public class Database : IDatabase
         }
     }
 
+
     public List<Order> GetPendingOrders()
     {
-        return _db.Table<Order>().Where(o => !o.IsFulfilled).ToList();
+        var orders = _db.Table<Order>().Where(o => !o.IsFulfilled).ToList();
+
+        foreach (var order in orders)
+        {
+            // Populate Items for each order
+            order.Items = GetItemsByOrderId(order.OrderId);
+        }
+
+        return orders;
     }
 
     public void FulfillOrder(int orderId)
@@ -66,8 +72,21 @@ public class Database : IDatabase
         var startOfDay = date.Date; // Midnight of the specified day
         var endOfDay = startOfDay.AddDays(1); // Midnight of the next day
 
-        return _db.Table<Order>()
-                  .Where(o => o.OrderDate >= startOfDay && o.OrderDate < endOfDay)
-                  .ToList();
+        var orders = _db.Table<Order>()
+                        .Where(o => o.OrderDate >= startOfDay && o.OrderDate < endOfDay)
+                        .ToList();
+
+        foreach (var order in orders)
+        {
+            // Populate Items for each order
+            order.Items = GetItemsByOrderId(order.OrderId);
+        }
+
+        return orders;
+    }
+
+    public List<Item> GetItemsByOrderId(int orderId)
+    {
+        return _db.Table<Item>().Where(i => i.OrderId == orderId).ToList();
     }
 }

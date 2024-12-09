@@ -8,4 +8,6 @@ public interface IDatabase
     List<Order> GetPendingOrders();
     void FulfillOrder(int orderId);
     List<Order> GetOrdersByDate(DateTime date);
+    List<Item> GetItemsByOrderId(int orderId);
+
 }

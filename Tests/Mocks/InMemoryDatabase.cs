@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using testing_final.Logic.Models;
@@ -24,7 +25,15 @@ public class InMemoryDatabase : IDatabase
 
     public List<Order> GetPendingOrders()
     {
-        return _orders.Where(o => !o.IsFulfilled).ToList();
+        var orders = _orders.Where(o => !o.IsFulfilled).ToList();
+
+        foreach (var order in orders)
+        {
+            // Populate items for each order
+            order.Items = GetItemsByOrderId(order.OrderId);
+        }
+
+        return orders;
     }
 
     public void FulfillOrder(int orderId)
@@ -38,6 +47,19 @@ public class InMemoryDatabase : IDatabase
 
     public List<Order> GetOrdersByDate(DateTime date)
     {
-        return _orders.Where(o => o.OrderDate.Date == date.Date).ToList();
+        var orders = _orders.Where(o => o.OrderDate.Date == date.Date).ToList();
+
+        foreach (var order in orders)
+        {
+            // Populate items for each order
+            order.Items = GetItemsByOrderId(order.OrderId);
+        }
+
+        return orders;
+    }
+
+    public List<Item> GetItemsByOrderId(int orderId)
+    {
+        return _items.Where(i => i.OrderId == orderId).ToList();
     }
 }
