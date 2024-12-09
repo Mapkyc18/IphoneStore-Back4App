@@ -11,7 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var order in PendingOrders)
+        @foreach (var order in Orders)
         {
             <tr>
                 <td>@order.OrderId</td>
@@ -26,12 +26,12 @@
 </table>
 
 @code {
-    private List<Order> PendingOrders = new();
+    private List<Order> Orders = new();
 
     protected override void OnInitialized()
     {
         // Fetch pending orders from the logic layer
-        PendingOrders = OrderManager.GetPendingOrders();
+        Orders = OrderManager.GetPendingOrders();
     }
 
     private void FulfillOrder(int orderId)
@@ -40,6 +40,6 @@
         OrderManager.FulfillOrder(orderId);
 
         // Refresh the pending orders list
-        PendingOrders = OrderManager.GetPendingOrders();
+        Orders = OrderManager.GetPendingOrders();
     }
 }

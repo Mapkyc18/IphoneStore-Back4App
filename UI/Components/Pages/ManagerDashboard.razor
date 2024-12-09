@@ -1,0 +1,66 @@
+@page "/manager-dashboard"
+@inject OrderManager OrderManager
+
+<h3>Manager Dashboard</h3>
+
+<div class="form">
+    <label for="date">Select a date:</label>
+    <input type="date" id="date" @bind="SelectedDate" />
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Orders)
+        {
+            <tr>
+                <td>@order.OrderId</td>
+                <td>@order.OrderDate.ToShortDateString()</td>
+                <td>@order.TotalAmount:C</td>
+                <td>
+                    <button @onclick="() => ViewDetails(order.OrderId)">View Details</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (SelectedOrder != null)
+{
+    <h4>Order Details</h4>
+    <ul>
+        @foreach (var item in SelectedOrder.Items)
+        {
+            <li>@item.Quantity x @item.Name (@item.Price:C each)</li>
+        }
+    </ul>
+    <p><strong>Total:</strong> @SelectedOrder.TotalAmount:C</p>
+}
+
+@code {
+    private DateTime SelectedDate = DateTime.Now;
+    private List<Order> Orders = new();
+    private Order? SelectedOrder;
+
+    protected override void OnInitialized()
+    {
+        LoadOrders();
+    }
+
+    private void LoadOrders()
+    {
+        Orders = OrderManager.GetOrdersByDate(SelectedDate);
+    }
+
+    private void ViewDetails(int orderId)
+    {
+        SelectedOrder = OrderManager.GetOrderDetails(orderId);
+    }
+}
