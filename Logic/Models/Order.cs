@@ -1,5 +1,4 @@
 using SQLite;
-using System.Collections.Generic;
 using testing_final.Logic.Models;
 
 public class Order
@@ -10,7 +9,7 @@ public class Order
     public DateTime OrderDate { get; set; }
     public decimal TotalAmount { get; set; }
     public decimal SalesTax { get; set; }
-    public bool IsFulfilled { get; set; }
+    public bool IsFulfilled { get; set; } = false; // Default to false
 
     [Ignore]
     public List<Item> Items { get; set; } = new();
