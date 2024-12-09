@@ -1,0 +1,45 @@
+@inject OrderManager OrderManager
+
+<h3>Pending Orders</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in PendingOrders)
+        {
+            <tr>
+                <td>@order.OrderId</td>
+                <td>@order.OrderDate.ToShortDateString()</td>
+                <td>@order.TotalAmount:C</td>
+                <td>
+                    <button @onclick="() => FulfillOrder(order.OrderId)">Fulfill</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Order> PendingOrders = new();
+
+    protected override void OnInitialized()
+    {
+        // Fetch pending orders from the logic layer
+        PendingOrders = OrderManager.GetPendingOrders();
+    }
+
+    private void FulfillOrder(int orderId)
+    {
+        // Mark the order as fulfilled
+        OrderManager.FulfillOrder(orderId);
+
+        // Refresh the pending orders list
+        PendingOrders = OrderManager.GetPendingOrders();
+    }
+}
