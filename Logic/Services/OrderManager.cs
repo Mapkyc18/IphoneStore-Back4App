@@ -14,6 +14,10 @@ public class OrderManager : IOrderManager
 
     public void AddOrder(Order order)
     {
+        if (order == null) throw new ArgumentNullException(nameof(order));
+
+        // Calculate total before saving
+        order.CalculateTotal(0.07m); // 7% sales tax
         _database.SaveOrder(order);
     }
 
@@ -32,9 +36,8 @@ public class OrderManager : IOrderManager
         return _database.GetOrdersByDate(date);
     }
 
-    public Order GetOrderDetails(int orderId)
+    public Order? GetOrderDetails(int orderId)
     {
-        var orders = _database.GetPendingOrders();
-        return orders.FirstOrDefault(o => o.OrderId == orderId);
+        return GetPendingOrders().FirstOrDefault(o => o.OrderId == orderId);
     }
 }
