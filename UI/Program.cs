@@ -1,3 +1,5 @@
+using testing_final.Logic.Data;
+using testing_final.Logic.Services;
 using UI.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,7 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
+    
+builder.Services.AddSingleton(new Database("orders.db")); // Replace "orders.db" with your actual database path
+builder.Services.AddSingleton<OrderManager>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
