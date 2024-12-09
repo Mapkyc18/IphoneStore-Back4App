@@ -1,4 +1,8 @@
 using SQLite;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using testing_final.Logic.Interfaces;
 using testing_final.Logic.Models;
 
@@ -10,17 +14,34 @@ public class Database : IDatabase
 
     public Database(string dbPath)
     {
+        if (string.IsNullOrWhiteSpace(dbPath))
+        {
+            throw new ArgumentException("Database path cannot be null or empty.", nameof(dbPath));
+        }
+
+        Console.WriteLine($"Initializing database at: {dbPath}");
+
+        // Ensure the database file is created in the specified path
+        Directory.CreateDirectory(Path.GetDirectoryName(dbPath));
+
         _db = new SQLiteConnection(dbPath);
+
+        // Automatically create tables if they do not exist
         _db.CreateTable<Order>();
         _db.CreateTable<Item>();
     }
 
     public void SaveOrder(Order order)
     {
+        if (order == null) throw new ArgumentNullException(nameof(order));
+
+        // Save the order
         _db.Insert(order);
+
+        // Save the associated items
         foreach (var item in order.Items)
         {
-            item.OrderId = order.OrderId;
+            item.OrderId = order.OrderId; // Link items to the saved order
             _db.Insert(item);
         }
     }

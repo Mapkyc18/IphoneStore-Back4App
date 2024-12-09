@@ -10,6 +10,7 @@ builder.Services.AddRazorComponents()
     
 builder.Services.AddSingleton(new Database("orders.db")); // Replace "orders.db" with your actual database path
 builder.Services.AddSingleton<OrderManager>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
