@@ -1,133 +1,61 @@
-/* General container styling */
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Container */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    font-family: Arial, sans-serif;
 }
 
 /* Header */
 header {
-    text-align: center;
     background-color: #4CAF50;
     color: white;
-    padding: 10px 0;
-    border-radius: 5px;
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
 }
 
 header h1 {
     margin: 0;
-    font-size: 2rem;
+    font-size: 2.5rem;
+}
+
+/* Navigation */
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: #d4ffd1;
+}
+
+/* Main Content */
+main {
+    margin-bottom: 20px;
 }
 
 /* Footer */
 footer {
     text-align: center;
-    margin-top: 20px;
-    font-size: 0.9rem;
-    color: #888;
-}
-
-/* Form Styling */
-.form {
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.form label {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.form input {
-    width: 300px;
     padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-.form input:focus {
-    outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-}
-
-/* Buttons */
-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-/* Error Messages */
-.error-message {
-    color: red;
     font-size: 0.9rem;
-    margin-top: 5px;
+    color: #666;
+    border-top: 1px solid #ddd;
 }
-
-/* Table Styling */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table th,
-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border: 1px solid #ddd;
-}
-
-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-}
-
-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-table tr:hover {
-    background-color: #f1f1f1;
-}
-
-/* Order Details Section */
-h4 {
-    margin-top: 20px;
-    font-size: 1.2rem;
-    color: #333;
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-ul li {
-    margin: 5px 0;
-}
-
-ul li strong {
-    font-weight: bold;
-}
-

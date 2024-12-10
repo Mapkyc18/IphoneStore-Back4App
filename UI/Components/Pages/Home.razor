@@ -1,8 +1,8 @@
 ﻿@page "/"
-@inject OrderManager OrderManager
+@inject testing_final.Logic.Models.Cart CartService
 
-<h1>Ordering Kiosk</h1>
-<p>Welcome to the Ordering Kiosk! Click on a product to add it to your order.</p>
+<h1>iPhone World</h1>
+<p>Cheapest Iphones with Free Shipping! Add products to your cart by clicking the "Add" button.</p>
 
 <div class="product-grid">
     @foreach (var product in ProductCatalog.Products)
@@ -10,99 +10,26 @@
         <div class="product-card">
             <img src="@GetProductImage(product.Name)" alt="@product.Name" />
             <h3>@product.Name</h3>
-            <p>@product.Price:C</p>
-            <button @onclick="() => AddToOrder(product)">Add to Order</button>
+            <p>$@product.Price</p> <!-- Changed to display with $ prefix -->
+
+            <div class="product-actions">
+                <button @onclick="() => AddToCart(product)">Add</button>
+                <span>Qty: @GetQuantityInCart(product.Name)</span>
+            </div>
         </div>
     }
 </div>
 
-<h2>Your Cart</h2>
-@if (Items.Count > 0)
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Items)
-            {
-                <tr>
-                    <td>@item.Name</td>
-                    <td>@item.Quantity</td>
-                    <td>@item.Price:C</td>
-                    <td>@(item.Price * item.Quantity):C</td>
-                    <td>
-                        <button @onclick="() => RemoveItem(item)">Remove</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <p><strong>Total:</strong> @CalculateCartTotal():C</p>
-    <button @onclick="SaveOrder">Submit Order</button>
-    <button @onclick="CancelOrder">Cancel Order</button>
-}
-else
-{
-    <p>Your cart is empty.</p>
-}
-
 @code {
-    private List<Item> Items = new();
-
-    private void AddToOrder(Item product)
+    private void AddToCart(Item product)
     {
-        var existingItem = Items.FirstOrDefault(i => i.Name == product.Name);
-        if (existingItem != null)
-        {
-            existingItem.Quantity++;
-        }
-        else
-        {
-            Items.Add(new Item
-            {
-                Name = product.Name,
-                Price = product.Price,
-                Quantity = 1
-            });
-        }
+        CartService.AddItem(product);
     }
 
-    private void RemoveItem(Item item)
+    private int GetQuantityInCart(string productName)
     {
-        Items.Remove(item);
-    }
-
-    private decimal CalculateCartTotal()
-    {
-        return Items.Sum(i => i.Price * i.Quantity);
-    }
-
-    private void SaveOrder()
-    {
-        if (Items.Count == 0) return;
-
-        var newOrder = new Order
-        {
-            OrderDate = DateTime.Now,
-            Items = Items
-        };
-
-        // Use the injected instance of OrderManager
-        OrderManager.AddOrder(newOrder);
-        Items.Clear();
-    }
-
-    private void CancelOrder()
-    {
-        Items.Clear();
+        var item = CartService.Items.FirstOrDefault(i => i.Name == productName);
+        return item?.Quantity ?? 0;
     }
 
     private string GetProductImage(string productName)

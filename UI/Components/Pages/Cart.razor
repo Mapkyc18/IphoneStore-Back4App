@@ -1,0 +1,50 @@
+@page "/cart"
+@inject testing_final.Logic.Models.Cart CartService
+
+<h1>Your Cart</h1>
+
+@if (CartService.Items.Count > 0)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in CartService.Items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>$@item.Price</td>
+                    <td>@item.Quantity</td>
+                    <td>$@(item.Price * item.Quantity)</td>
+                    <td>
+                        <button @onclick="() => CartService.RemoveItem(item.Name)">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p><strong>Subtotal:</strong> $@CartService.CalculateCartSubtotal()</p>
+    <p><strong>Sales Tax (7%):</strong> $@CartService.CalculateTax()</p>
+    <p><strong>Total:</strong> $@CartService.CalculateCartTotal()</p>
+
+    <button @onclick="ClearCart">Clear Cart</button>
+}
+else
+{
+    <p>Your cart is empty.</p>
+}
+
+@code {
+    private void ClearCart()
+    {
+        CartService.ClearCart();
+    }
+}

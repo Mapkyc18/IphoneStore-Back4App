@@ -2,6 +2,7 @@ using testing_final.Logic.Data;
 using testing_final.Logic.Interfaces;
 using testing_final.Logic.Services;
 using UI.Components;
+using testing_final.Logic.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ var dbPath = Path.Combine(Directory.GetCurrentDirectory(), "orders.db");
 Console.WriteLine($"Database path: {dbPath}");
 builder.Services.AddSingleton<IDatabase>(provider => new Database(dbPath));
 builder.Services.AddSingleton<OrderManager>();
+builder.Services.AddSingleton<Cart>();
 
 var app = builder.Build();
 
