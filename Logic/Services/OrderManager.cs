@@ -12,6 +12,18 @@ public class OrderManager : IOrderManager
         _database = database;
     }
 
+    public static class ProductCatalog
+    {
+        public static readonly List<Item> Products = new()
+    {
+        new Item { Name = "iPhone 16", Price = 1099 },
+        new Item { Name = "iPhone 15", Price = 899 },
+        new Item { Name = "iPhone 14", Price = 799 },
+        new Item { Name = "iPhone 13", Price = 699 },
+        new Item { Name = "iPhone 12", Price = 599 }
+    };
+    }
+
     public void AddOrder(Order order)
     {
         if (order == null) throw new ArgumentNullException(nameof(order));
