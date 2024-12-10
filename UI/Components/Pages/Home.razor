@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject OrderManager OrderManager
 
 <h1>Ordering Kiosk</h1>
 <p>Welcome to the Ordering Kiosk! Click on a product to add it to your order.</p>
@@ -94,6 +95,7 @@ else
             Items = Items
         };
 
+        // Use the injected instance of OrderManager
         OrderManager.AddOrder(newOrder);
         Items.Clear();
     }
@@ -105,6 +107,6 @@ else
 
     private string GetProductImage(string productName)
     {
-        return productName.ToLower().Replace(" ", "-") + ".jpg";
+        return $"/images/{productName.ToLower().Replace(" ", "-")}.jpg";
     }
 }
