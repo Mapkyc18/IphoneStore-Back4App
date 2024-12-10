@@ -1,45 +1,64 @@
+@page "/pending-orders"
 @inject OrderManager OrderManager
 
 <h3>Pending Orders</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Order ID</th>
-            <th>Date</th>
-            <th>Total</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Orders)
-        {
+
+@if (Orders.Count > 0)
+{
+    <table class="pending-orders-table">
+        <thead>
             <tr>
-                <td>@order.OrderId</td>
-                <td>@order.OrderDate.ToShortDateString()</td>
-                <td>@order.TotalAmount:C</td>
-                <td>
-                    <button @onclick="() => FulfillOrder(order.OrderId)">Fulfill</button>
-                </td>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var order in Orders)
+            {
+                <tr>
+                    <td>@order.OrderId</td>
+                    <td>@order.OrderDate.ToShortDateString()</td>
+                    <td>$@order.TotalAmount:F2</td>
+                    <td>@(order.IsFulfilled ? "Fulfilled" : "Pending")</td>
+                    <td>
+                        @if (!order.IsFulfilled)
+                        {
+                            <button @onclick="() => FulfillOrder(order.OrderId)">Fulfill</button>
+                        }
+                        else
+                        {
+                            <span>Fulfilled</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No pending orders at the moment.</p>
+}
 
 @code {
     private List<Order> Orders = new();
 
     protected override void OnInitialized()
     {
-        // Fetch pending orders from the logic layer
+        LoadPendingOrders();
+    }
+
+    private void LoadPendingOrders()
+    {
         Orders = OrderManager.GetPendingOrders();
     }
 
     private void FulfillOrder(int orderId)
     {
-        // Mark the order as fulfilled
         OrderManager.FulfillOrder(orderId);
-
-        // Refresh the pending orders list
-        Orders = OrderManager.GetPendingOrders();
+        LoadPendingOrders();
     }
 }

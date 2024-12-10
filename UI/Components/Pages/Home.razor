@@ -1,8 +1,11 @@
 ﻿@page "/"
-@inject testing_final.Logic.Models.Cart CartService
+@using testing_final.Logic.Models
+@inject ShoppingCart CartService
+
+
 
 <h1>iPhone World</h1>
-<p>Cheapest Iphones with Free Shipping! Add products to your cart by clicking the "Add" button.</p>
+<p>Browse the cheapest iPhone catalog and add items to your cart.</p>
 
 <div class="product-grid">
     @foreach (var product in ProductCatalog.Products)
@@ -10,28 +13,13 @@
         <div class="product-card">
             <img src="@GetProductImage(product.Name)" alt="@product.Name" />
             <h3>@product.Name</h3>
-            <p>$@product.Price</p> <!-- Changed to display with $ prefix -->
-
-            <div class="product-actions">
-                <button @onclick="() => AddToCart(product)">Add</button>
-                <span>Qty: @GetQuantityInCart(product.Name)</span>
-            </div>
+            <p>$@product.Price</p>
+            <button @onclick="() => CartService.AddItem(product)">Add</button>
         </div>
     }
 </div>
 
 @code {
-    private void AddToCart(Item product)
-    {
-        CartService.AddItem(product);
-    }
-
-    private int GetQuantityInCart(string productName)
-    {
-        var item = CartService.Items.FirstOrDefault(i => i.Name == productName);
-        return item?.Quantity ?? 0;
-    }
-
     private string GetProductImage(string productName)
     {
         return $"/images/{productName.ToLower().Replace(" ", "-")}.jpg";

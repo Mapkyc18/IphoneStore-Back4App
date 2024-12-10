@@ -6,4 +6,9 @@ public static class TaxCalculator
     {
         return subtotal * taxRate;
     }
+    public static string FormatPrice(decimal price)
+    {
+        return price.ToString("C");
+    }
+
 }

@@ -14,7 +14,7 @@ var dbPath = Path.Combine(Directory.GetCurrentDirectory(), "orders.db");
 Console.WriteLine($"Database path: {dbPath}");
 builder.Services.AddSingleton<IDatabase>(provider => new Database(dbPath));
 builder.Services.AddSingleton<OrderManager>();
-builder.Services.AddSingleton<Cart>();
+builder.Services.AddSingleton<ShoppingCart>();
 
 var app = builder.Build();
 

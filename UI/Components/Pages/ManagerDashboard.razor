@@ -1,76 +1,92 @@
 @page "/manager-dashboard"
+@using testing_final.Logic.Models
+@inject ShoppingCart CartService
 @inject OrderManager OrderManager
+
+<h3>Manager Dashboard</h3>
 
 @if (!IsAuthenticated)
 {
-    <h3>Manager Login</h3>
-    <input type="password" @bind="Password" placeholder="Enter Password" />
-    <button @onclick="Login">Login</button>
-    @if (LoginFailed)
-    {
-        <p style="color: red;">Invalid password. Please try again.</p>
-    }
+    <div class="auth-form">
+        <label for="password">Enter Manager Password:</label>
+        <input type="password" id="password" @bind="ManagerPassword" />
+        <button @onclick="AuthenticateManager">Login</button>
+        <p class="error-message">@AuthenticationError</p>
+    </div>
 }
 else
 {
-    <h3>Manager Dashboard</h3>
+    <div>
+        <div class="form">
+            <label for="date">Select a date:</label>
+            <input type="date" id="date" @bind="SelectedDate" />
+        </div>
 
-    <div class="form">
-        <label for="date">Select a date:</label>
-        <input type="date" id="date" @bind="SelectedDate" />
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var order in Orders)
-            {
+        <table>
+            <thead>
                 <tr>
-                    <td>@order.OrderId</td>
-                    <td>@order.OrderDate.ToShortDateString()</td>
-                    <td>@order.TotalAmount:C</td>
-                    <td>
-                        <button @onclick="() => ViewDetails(order.OrderId)">View Details</button>
-                        <button @onclick="() => FulfillOrder(order.OrderId)" disabled="@order.IsFulfilled">Fulfill</button>
-                    </td>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var order in Orders)
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@order.OrderDate.ToShortDateString()</td>
+                        <td>@TaxCalculator.FormatPrice(order.TotalAmount)</td>
+                        <td>
+                            <button @onclick="() => ViewDetails(order.OrderId)">View Details</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-    @if (SelectedOrder != null)
-    {
-        <h4>Order Details</h4>
-        <ul>
-            @foreach (var item in SelectedOrder.Items)
-            {
-                <li>@item.Quantity x @item.Name (@item.Price:C each)</li>
-            }
-        </ul>
-        <p><strong>Total:</strong> @SelectedOrder.TotalAmount:C</p>
-    }
+        @if (SelectedOrder != null)
+        {
+            <h4>Order Details</h4>
+            <ul>
+                @foreach (var item in SelectedOrder.Items)
+                {
+                    <li>@item.Quantity x @item.Name (@TaxCalculator.FormatPrice(item.Price) each)</li>
+                }
+            </ul>
+            <p><strong>Total:</strong> @TaxCalculator.FormatPrice(SelectedOrder.TotalAmount)</p>
+        }
+    </div>
 }
 
 @code {
+    private string ManagerPassword = string.Empty;
     private bool IsAuthenticated = false;
-    private bool LoginFailed = false;
-    private string Password = string.Empty;
-    private const string ManagerPassword = "admin123"; // Replace with a secure mechanism
-
+    private string AuthenticationError = string.Empty;
     private DateTime SelectedDate = DateTime.Now;
     private List<Order> Orders = new();
     private Order? SelectedOrder;
 
     protected override void OnInitialized()
     {
-        LoadOrders();
+        CartService.CartUpdated += StateHasChanged;
+    }
+
+    private void AuthenticateManager()
+    {
+        const string correctPassword = "Banana"; 
+        if (ManagerPassword == correctPassword)
+        {
+            IsAuthenticated = true;
+            ManagerPassword = string.Empty; 
+            AuthenticationError = string.Empty;
+            LoadOrders();
+        }
+        else
+        {
+            AuthenticationError = "Invalid password. Please try again.";
+        }
     }
 
     private void LoadOrders()
@@ -81,38 +97,10 @@ else
     private void ViewDetails(int orderId)
     {
         SelectedOrder = OrderManager.GetOrderDetails(orderId);
-
-        if (SelectedOrder == null)
-        {
-            Console.WriteLine($"Order with ID {orderId} not found.");
-        }
-        else
-        {
-            Console.WriteLine($"Selected Order ID: {SelectedOrder.OrderId}, Total: {SelectedOrder.TotalAmount:C}");
-            foreach (var item in SelectedOrder.Items)
-            {
-                Console.WriteLine($"Item: {item.Name}, Quantity: {item.Quantity}, Price: {item.Price:C}");
-            }
-        }
     }
 
-    private void FulfillOrder(int orderId)
+    public void Dispose()
     {
-        OrderManager.FulfillOrder(orderId);
-        LoadOrders(); // Refresh the orders list
-    }
-
-    private void Login()
-    {
-        if (Password == ManagerPassword)
-        {
-            IsAuthenticated = true;
-            LoginFailed = false;
-            LoadOrders(); // Load orders after successful login
-        }
-        else
-        {
-            LoginFailed = true;
-        }
+        CartService.CartUpdated -= StateHasChanged;
     }
 }

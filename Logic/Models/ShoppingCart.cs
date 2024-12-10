@@ -1,13 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
+using testing_final.Logic.Utilities;
+
 
 namespace testing_final.Logic.Models
 {
-    public class Cart
+    public class ShoppingCart
     {
-        public List<Item> Items { get; set; } = new();
+        public List<Item> Items { get; private set; } = new();
 
-        private const decimal SalesTaxRate = 0.07m;
+        public event Action? CartUpdated;
+
+        public void NotifyCartUpdated()
+        {
+            CartUpdated?.Invoke();
+        }
+
 
         public void AddItem(Item product, int quantity = 1)
         {
@@ -36,34 +44,25 @@ namespace testing_final.Logic.Models
             }
         }
 
-        public void ClearCart()
-        {
-            Items.Clear();
-        }
-
         public decimal CalculateCartSubtotal()
         {
             return Items.Sum(item => item.Price * item.Quantity);
         }
 
-        public decimal CalculateTax()
+        public decimal CalculateTax(decimal taxRate = 0.07m)
         {
-            return CalculateCartSubtotal() * SalesTaxRate;
+            return TaxCalculator.CalculateTax(CalculateCartSubtotal(), taxRate);
         }
 
-        public decimal CalculateCartTotal()
+        public decimal CalculateCartTotal(decimal taxRate = 0.07m)
         {
-            return CalculateCartSubtotal() + CalculateTax();
+            return CalculateCartSubtotal() + CalculateTax(taxRate);
         }
 
-        public string GetCartSummary()
+        public void ClearCart()
         {
-            var summary = string.Join("\n", Items.Select(item => $"{item.Quantity} x {item.Name} @ {item.Price:C} each = {item.Price * item.Quantity:C}"));
-            var subtotal = CalculateCartSubtotal();
-            var tax = CalculateTax();
-            var total = CalculateCartTotal();
-
-            return $"{summary}\n\nSubtotal: {subtotal:C}\nSales Tax (7%): {tax:C}\nTotal: {total:C}";
+            Items.Clear();
         }
     }
 }
+
