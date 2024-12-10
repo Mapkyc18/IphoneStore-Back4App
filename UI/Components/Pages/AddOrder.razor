@@ -31,9 +31,18 @@
     </table>
 
     <div class="add-item-form">
-        <input placeholder="Item Name" @bind="NewItemName" />
-        <input placeholder="Price" type="number" @bind="NewItemPrice" />
-        <input placeholder="Quantity" type="number" @bind="NewItemQuantity" />
+        <label for="product">Product:</label>
+        <select id="product" @bind="SelectedProductName">
+            <option disabled selected value="">Select a product</option>
+            @foreach (var product in ProductCatalog.Products)
+            {
+                <option value="@product.Name">@product.Name (@product.Price:C)</option>
+            }
+        </select>
+
+        <label for="quantity">Quantity:</label>
+        <input id="quantity" type="number" @bind="NewItemQuantity" min="1" />
+
         <button @onclick="AddItem">Add Item</button>
     </div>
 
@@ -45,19 +54,36 @@
 @code {
     private DateTime NewOrderDate = DateTime.Now;
     private List<Item> Items = new();
-    private string NewItemName = string.Empty;
-    private decimal NewItemPrice;
+    private string SelectedProductName = string.Empty;
     private int NewItemQuantity;
     private string SuccessMessage = string.Empty;
 
     private void AddItem()
     {
-        if (!string.IsNullOrWhiteSpace(NewItemName) && NewItemPrice > 0 && NewItemQuantity > 0)
+        if (!string.IsNullOrEmpty(SelectedProductName) && NewItemQuantity > 0)
         {
-            Items.Add(new Item { Name = NewItemName, Price = NewItemPrice, Quantity = NewItemQuantity });
-            NewItemName = string.Empty;
-            NewItemPrice = 0;
-            NewItemQuantity = 0;
+            var selectedProduct = ProductCatalog.Products.FirstOrDefault(p => p.Name == SelectedProductName);
+            if (selectedProduct != null)
+            {
+                var existingItem = Items.FirstOrDefault(i => i.Name == selectedProduct.Name);
+                if (existingItem != null)
+                {
+                    existingItem.Quantity += NewItemQuantity;
+                }
+                else
+                {
+                    Items.Add(new Item
+                    {
+                        Name = selectedProduct.Name,
+                        Price = selectedProduct.Price,
+                        Quantity = NewItemQuantity
+                    });
+                }
+
+                // Reset fields
+                SelectedProductName = string.Empty;
+                NewItemQuantity = 0;
+            }
         }
     }
 
@@ -68,6 +94,12 @@
 
     private void SaveOrder()
     {
+        if (Items.Count == 0)
+        {
+            SuccessMessage = "Cannot save an order with no items!";
+            return;
+        }
+
         var newOrder = new Order
         {
             OrderDate = NewOrderDate,
